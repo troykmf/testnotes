@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "494306428997",
+    "project_id": "mynotes-tolulope-project",
+    "storage_bucket": "mynotes-tolulope-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494306428997:android:a1e5965b70e20999b9bb2c",
+        "android_client_info": {
+          "package_name": "com.keepmovingforward.mynotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "494306428997-igkdga5j6pr5d8nd4l3v8t9t1ud62ppj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALQpTV23HCul--v3_cfPA-Rmqx6Qeah1A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494306428997-igkdga5j6pr5d8nd4l3v8t9t1ud62ppj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "494306428997-epodh14hs07dvgn1ei4r68r1imci4pkf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.keepmovingforward.mynotes"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494306428997:android:2263fef0e867c7f0b9bb2c",
+        "android_client_info": {
+          "package_name": "com.tolulope.testnotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "494306428997-igkdga5j6pr5d8nd4l3v8t9t1ud62ppj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALQpTV23HCul--v3_cfPA-Rmqx6Qeah1A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494306428997-igkdga5j6pr5d8nd4l3v8t9t1ud62ppj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "494306428997-epodh14hs07dvgn1ei4r68r1imci4pkf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.keepmovingforward.mynotes"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
