@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:testnotes/views/login_view.dart';
 import 'package:testnotes/views/register_view.dart';
+import 'package:testnotes/views/verify_email_view.dart';
 import 'firebase_options.dart';
 
 void main() {
@@ -44,27 +45,39 @@ class HomePage extends StatelessWidget {
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
-            //to verify the user of an email address,
-            // final user = FirebaseAuth.instance.currentUser;
-            // if (user?.emailVerified ?? false) {
-            //   print('You are verified.');
-            // } else {
-            //   return const VerifyEmailView();
-            /* NOTE: we are not pushing verifyemailview as a screen because
+            final user = FirebaseAuth.instance.currentUser;
+            if (user != null) {
+              if (user.emailVerified) {
+                print('Email is verified');
+              } else {
+                return const VerifyEmailView();
+              }
+            } else {
+              return const LoginView();
+            }
+            return const Text('Done');
+
+          //to verify the user of an email address,
+          // final user = FirebaseAuth.instance.currentUser;
+          // if (user?.emailVerified ?? false) {
+          //   print('You are verified.');
+          // } else {
+          //   return const VerifyEmailView();
+          /* NOTE: we are not pushing verifyemailview as a screen because
                   it's just like pushing an entire screen into the main screen
                   since the main screen already contains a scaffold and an appbar 
                   so instead, we would only be pushing a widget or rather we 
                   would be returning a widget like we did above */
-            //p.s the below route is an anonymous route
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (context) => const VerifyEmailView(),
-            //   ),
-            // );
-            // print('You need to verify your email first');
-            // }
-            // return const Text('Done');
-            return const LoginView();
+          //p.s the below route is an anonymous route
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (context) => const VerifyEmailView(),
+          //   ),
+          // );
+          // print('You need to verify your email first');
+          // }
+          // return const Text('Done');
+          // return const LoginView();
           default:
             return const CircularProgressIndicator();
         }
