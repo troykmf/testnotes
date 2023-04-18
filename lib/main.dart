@@ -17,11 +17,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginView(),
+      home: const HomePage(),
+      //below is how to use a Named route
+      routes: {
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const RegisterView()
+      },
     );
   }
 }
@@ -31,49 +37,41 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Login'),
-        ),
-        body: FutureBuilder(
-          future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
-          ),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                //to verify the user of an email address,
-                final user = FirebaseAuth.instance.currentUser;
-                if (user?.emailVerified ?? false) {
-                  print('You are verified.');
-                } else {
-                  print('You need to verify your email first');
-                }
-                return const Text('Done');
-              default:
-                return const Text('Loading...');
-            }
-          },
-        ));
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      ),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            //to verify the user of an email address,
+            // final user = FirebaseAuth.instance.currentUser;
+            // if (user?.emailVerified ?? false) {
+            //   print('You are verified.');
+            // } else {
+            //   return const VerifyEmailView();
+            /* NOTE: we are not pushing verifyemailview as a screen because
+                  it's just like pushing an entire screen into the main screen
+                  since the main screen already contains a scaffold and an appbar 
+                  so instead, we would only be pushing a widget or rather we 
+                  would be returning a widget like we did above */
+            //p.s the below route is an anonymous route
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (context) => const VerifyEmailView(),
+            //   ),
+            // );
+            // print('You need to verify your email first');
+            // }
+            // return const Text('Done');
+            return const LoginView();
+          default:
+            return const CircularProgressIndicator();
+        }
+      },
+    );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
