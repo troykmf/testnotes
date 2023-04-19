@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:testnotes/constants/routes.dart';
 import 'package:testnotes/views/login_view.dart';
 import 'package:testnotes/views/register_view.dart';
 import 'package:testnotes/views/verify_email_view.dart';
@@ -27,9 +28,9 @@ class MyApp extends StatelessWidget {
       home: const HomePage(),
       //below is how to use a Named route
       routes: {
-        '/login/': (context) => const LoginView(),
-        '/register/': (context) => const RegisterView(),
-        '/notes/': (context) => const NotesView()
+        loginRoute: (context) => const LoginView(),
+        registerRoute: (context) => const RegisterView(),
+        notesRoute: (context) => const NotesView()
       },
     );
   }
@@ -115,7 +116,7 @@ class _NotesViewState extends State<NotesView> {
                     if (shouldLogout) {
                       await FirebaseAuth.instance.signOut(); //the signout code
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/login/',
+                        loginRoute,
                         (_) => false,
                       );
                     }
