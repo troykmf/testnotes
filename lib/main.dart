@@ -5,6 +5,7 @@ import 'package:testnotes/views/login_view.dart';
 import 'package:testnotes/views/register_view.dart';
 import 'package:testnotes/views/verify_email_view.dart';
 import 'firebase_options.dart';
+import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,14 +49,13 @@ class HomePage extends StatelessWidget {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
-                print('Email is verified');
+                return const NotesView();
               } else {
                 return const VerifyEmailView();
               }
             } else {
               return const LoginView();
             }
-            return const Text('Done');
 
           //to verify the user of an email address,
           // final user = FirebaseAuth.instance.currentUser;
@@ -86,7 +86,88 @@ class HomePage extends StatelessWidget {
   }
 }
 
+enum MenuAction { logout }
 
+class NotesView extends StatefulWidget {
+  const NotesView({Key? key}) : super(key: key);
+
+  @override
+  State<NotesView> createState() => _NotesViewState();
+}
+
+class _NotesViewState extends State<NotesView> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Main UI'),
+          actions: [
+            PopupMenuButton<MenuAction>(
+              onSelected: (value) async {
+                // devtools.log(value.toString());
+                switch (value) {
+                  case MenuAction.logout:
+                    // the below code is to get the value of the options on the alert dialog
+                    final shouldLogout = await showLogOutDialog(context);
+                    //the below code simply means that if the user shouldLogout then log the
+                    //person out and take him out of the home page
+                    if (shouldLogout) {
+                      await FirebaseAuth.instance.signOut(); //the signout code
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/login/',
+                        (_) => false,
+                      );
+                    }
+                    devtools.log(shouldLogout.toString());
+                    break;
+                }
+              },
+              itemBuilder: (context) {
+                return const [
+                  PopupMenuItem<MenuAction>(
+                    value: MenuAction
+                        .logout, // value is what the programmmer sees and
+                    child: Text('Log out'), // child is what the users will see
+                  ),
+                ];
+              },
+            )
+          ],
+        ),
+        body: const Text('Hello world'));
+  }
+}
+
+/* this is a function to create a popUpMenu that shows an alert dialog when 
+pressed that returns a bool cause a dialog basically returns a true or false value */
+Future<bool> showLogOutDialog(BuildContext context) {
+  return showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Log out'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+            child: const Text('Log out'),
+          )
+        ],
+      );
+    },
+    /*what this last line means is that if a user doesnt press any action or 
+    pressed something else that is not a true or false value declared, it should
+    either return the value selected or false that is it should dismiss the dialog*/
+  ).then((value) => value ?? false);
+}
 
 // class HomePage extends StatefulWidget {
 //   const HomePage({Key? key, required this.title}) : super(key: key);
