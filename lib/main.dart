@@ -28,7 +28,8 @@ class MyApp extends StatelessWidget {
       //below is how to use a Named route
       routes: {
         '/login/': (context) => const LoginView(),
-        '/register/': (context) => const RegisterView()
+        '/register/': (context) => const RegisterView(),
+        '/notes/': (context) => const NotesView()
       },
     );
   }
@@ -79,7 +80,7 @@ class HomePage extends StatelessWidget {
           // return const Text('Done');
           // return const LoginView();
           default:
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
         }
       },
     );
