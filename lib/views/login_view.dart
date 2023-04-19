@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:testnotes/constants/routes.dart';
 import 'package:testnotes/firebase_options.dart';
+import 'package:testnotes/utilities/show_error_dialog.dart';
 import 'package:testnotes/views/register_view.dart';
 import 'dart:developer' as devtools show log;
 
@@ -68,16 +70,34 @@ class _LoginViewState extends State<LoginView> {
                   password: password,
                 );
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/notes/',
+                  notesRoute,
                   (route) => false,
                 );
                 // devtools.log(userCredential.toString());
               } on FirebaseAuthException catch (e) {
-                if (e.code == 'user-not-available') {
-                  devtools.log('User not available');
+                if (e.code == 'user-not-found') {
+                  await showErrorDialog(
+                    context,
+                    'User not found',
+                  );
+                  // devtools.log('User not found');
                 } else if (e.code == 'wrong-password') {
-                  devtools.log('Wrong password');
+                  await showErrorDialog(
+                    context,
+                    'Wrong password',
+                  );
+                  // devtools.log('Wrong password');
+                } else {
+                  await showErrorDialog(
+                    context,
+                    'Error: ${e.code}',
+                  );
                 }
+              } catch (e) {
+                await showErrorDialog(
+                  context,
+                  e.toString(),
+                );
               }
             },
             child: const Text('Login'),
@@ -85,7 +105,7 @@ class _LoginViewState extends State<LoginView> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                '/register/',
+                registerRoute,
                 (route) => false,
               );
             },
@@ -94,27 +114,28 @@ class _LoginViewState extends State<LoginView> {
         ],
       ),
     );
-
-    // Scaffold(
-    //     appBar: AppBar(
-    //       title: const Text('Login'),
-    //     ),
-    //     body: FutureBuilder(
-    //       future: Firebase.initializeApp(
-    //         options: DefaultFirebaseOptions.currentPlatform,
-    //       ),
-    //       builder: (context, snapshot) {
-    //         switch (snapshot.connectionState) {
-    //           case ConnectionState.done:
-    //             return
-    //           default:
-    //             return const Text('Loading...');
-    //         }
-    //       },
-    //     ));
   }
 }
 
+
+
+// Scaffold(
+//     appBar: AppBar(
+//       title: const Text('Login'),
+//     ),
+//     body: FutureBuilder(
+//       future: Firebase.initializeApp(
+//         options: DefaultFirebaseOptions.currentPlatform,
+//       ),
+//       builder: (context, snapshot) {
+//         switch (snapshot.connectionState) {
+//           case ConnectionState.done:
+//             return
+//           default:
+//             return const Text('Loading...');
+//         }
+//       },
+//     ));
 //this code is for creating a va;id account using firebase
 // final userCredential = await FirebaseAuth.instance
 //     .createUserWithEmailAndPassword(
