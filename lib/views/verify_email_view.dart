@@ -18,7 +18,12 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
       ),
       body: Column(
         children: [
-          const Text('Please verify your email'),
+          const Text(
+            "We've sent you an email verification. Please open it to verify your accoun",
+          ),
+          const Text(
+            "If you haven't received a verificatoi email yet, press the button below",
+          ),
           TextButton(
             onPressed: () async {
               //this is to get the current use of the mail

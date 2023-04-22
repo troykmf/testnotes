@@ -94,6 +94,9 @@ class _LoginViewState extends State<LoginView> {
                   );
                 }
               } catch (e) {
+                //the below errorDialog is meant to catch any other error that
+                //we did not list. So any error that is thrown and we didn't
+                //record it, would be caught by the below catch block.
                 await showErrorDialog(
                   context,
                   e.toString(),
@@ -116,8 +119,6 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-
-
 
 // Scaffold(
 //     appBar: AppBar(
