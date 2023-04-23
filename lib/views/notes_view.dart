@@ -21,15 +21,21 @@ class _NotesViewState extends State<NotesView> {
             PopupMenuButton<MenuAction>(
               onSelected: (value) async {
                 // devtools.log(value.toString());
+
                 switch (value) {
                   case MenuAction.logout:
+
                     // the below code is to get the value of the options on the alert dialog
+
                     final shouldLogout = await showLogOutDialog(context);
+
                     //the below code simply means that if the user shouldLogout then log the
                     //person out and take him out of the home page
                     if (shouldLogout) {
                       await AuthService.firebase().logOut();
+
                       // await FirebaseAuth.instance.signOut(); //the signout code
+
                       Navigator.of(context).pushNamedAndRemoveUntil(
                         loginRoute,
                         (_) => false,

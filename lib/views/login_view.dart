@@ -61,7 +61,7 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                AuthService.firebase().logIn(
+                await AuthService.firebase().logIn(
                   email: email,
                   password: password,
                 );
@@ -94,7 +94,10 @@ class _LoginViewState extends State<LoginView> {
                   'Wrong password',
                 );
               } on GenericAuthException {
-                await showErrorDialog(context, 'Authntication error');
+                await showErrorDialog(
+                  context,
+                  'Authntication error',
+                );
               }
             },
             child: const Text('Login'),
