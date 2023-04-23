@@ -1,11 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:testnotes/constants/routes.dart';
-import 'package:testnotes/firebase_options.dart';
+import 'package:testnotes/services/auth/auth_exceptions.dart';
+import 'package:testnotes/services/auth/auth_service.dart';
 import 'package:testnotes/utilities/show_error_dialog.dart';
-import 'package:testnotes/views/login_view.dart';
-import 'dart:developer' as devtools show log;
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -63,49 +60,39 @@ class _RegisterViewState extends State<RegisterView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                AuthService.firebase().createUser(
                   email: email,
                   password: password,
                 );
-                final user = FirebaseAuth.instance.currentUser;
-                await user?.sendEmailVerification();
+                // await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                //   email: email,
+                //   password: password,
+                // );
+                final user = AuthService.firebase().currentUser;
+
+                AuthService.firebase().sendEmailVerification();
+
                 Navigator.of(context).pushNamed(
                   verifyEmailRoute,
                 );
                 // devtools.log(userCredential.toString());
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'weak-password') {
-                  showErrorDialog(
-                    context,
-                    'Weak password',
-                  );
-                  // devtools.log('Weak password');
-                } else if (e.code == 'email-already-in-use') {
-                  showErrorDialog(
-                    context,
-                    'Email is already in use',
-                  );
-                  // devtools.log('Email already in use');
-                } else if (e.code == 'invalid-email') {
-                  showErrorDialog(
-                    context,
-                    'This is an invalid email address',
-                  );
-                  // devtools.log('Invalid email');
-                } else {
-                  showErrorDialog(
-                    context,
-                    'Error: ${e.code}',
-                  );
-                }
-              } catch (e) {
-                //the below errorDialog is meant to catch any other error that
-                //we did not list. So any error that is thrown and we didn't
-                //record it, would be caught by the below catch block.
-                await showErrorDialog(
+              } on WeakPassworddAuthException {
+                showErrorDialog(
                   context,
-                  e.toString(),
+                  'Weak password',
                 );
+              } on EmailAlreadyInUseAuthException {
+                showErrorDialog(
+                  context,
+                  'Email is already in use',
+                );
+              } on InvalidEmailAuthException {
+                showErrorDialog(
+                  context,
+                  'This is an invalid email address',
+                );
+              } on GenericAuthException {
+                showErrorDialog(context, 'Failed to Register');
               }
             },
             child: const Text('Register'),
@@ -122,7 +109,44 @@ class _RegisterViewState extends State<RegisterView> {
         ],
       ),
     );
-    // Scaffold(
+  }
+}
+
+//  on FirebaseAuthException catch (e) {
+              //   if (e.code == 'weak-password') {
+              //     showErrorDialog(
+              //       context,
+              //       'Weak password',
+              //     );
+              //     // devtools.log('Weak password');
+              //   } else if (e.code == 'email-already-in-use') {
+              //     showErrorDialog(
+              //       context,
+              //       'Email is already in use',
+              //     );
+              //     // devtools.log('Email already in use');
+              //   } else if (e.code == 'invalid-email') {
+              //     showErrorDialog(
+              //       context,
+              //       'This is an invalid email address',
+              //     );
+              //     // devtools.log('Invalid email');
+              //   } else {
+              //     showErrorDialog(
+              //       context,
+              //       'Error: ${e.code}',
+              //     );
+              //   }
+              // } catch (e) {
+              //   //the below errorDialog is meant to catch any other error that
+              //   //we did not list. So any error that is thrown and we didn't
+              //   //record it, would be caught by the below catch block.
+              //   await showErrorDialog(
+              //     context,
+              //     e.toString(),
+              //   );
+              // }
+                  // Scaffold(
     //     appBar: AppBar(
     //       title: const Text('Register'),
     //     ),
@@ -139,5 +163,3 @@ class _RegisterViewState extends State<RegisterView> {
     //         }
     //       },
     //     ));
-  }
-}
