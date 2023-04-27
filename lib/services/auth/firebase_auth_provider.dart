@@ -50,7 +50,7 @@ class FirebaseAuthProvider implements AuthProvider {
   AuthUser? get currentUser {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      return AuthUser.fromFirebase(user);
+      return AuthUser.fromfirebase(user);
     } else {
       return null;
     }
