@@ -108,3 +108,8 @@ class FirebaseAuthProvider implements AuthProvider {
     }
   }
 }
+
+
+/// sqflite is a package needed for our program to talk with sqflite i.e for storage of our data
+/// path_provider is used to grab the app documents folder so we can create a file inside the folder and placee our data inside 
+/// 
