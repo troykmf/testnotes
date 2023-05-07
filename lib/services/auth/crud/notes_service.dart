@@ -12,11 +12,20 @@ class NotesService {
 
   List<DatabaseNotes> _notes =
       []; // this is where our notes are going to be kept. Let's just say its our cache
+
+// to make the NoteService class a Singleton
+  static final NotesService _shared = NotesService._sharedInstance();
+  NotesService._sharedInstance();
+  factory NotesService() => _shared;
+
   final _noteStreamController =
       StreamController<List<DatabaseNotes>>.broadcast();
   // to create a streamController, you just say StreamController<> and specify the type of data that the stream
   // contain and put .broadcast ...
   // e.g final noteStreamController = StreamController<List<DatabaseNotes>>.broadcast();
+
+  // getter for getting all notes
+  Stream<List<DatabaseNotes>> get allNotes => _noteStreamController.stream;
 
 // future functoin to make sure a user is associated to when the note service is used
   Future<DatabaseUser> getOrCreateUser({required String email}) async {
@@ -232,7 +241,7 @@ class NotesService {
     }
   }
 
-  //An async function that opens the database. Start
+//An async function that opens the database. Start
   Future<void> open() async {
     if (_db != null) {
       throw DatabaseAlreadyOpenException();
@@ -259,10 +268,13 @@ class NotesService {
     }
   } // end
 
+// future function to check in notes service for db opening
   Future<void> _ensureDbIsOpen() async {
     try {
       await open();
-    } on DatabaseAlreadyOpenException {}
+    } on DatabaseAlreadyOpenException {
+      // empty
+    }
   }
 
 // An async functon to close the database

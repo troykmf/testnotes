@@ -13,72 +13,97 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
-  // to get the user email
+  // here i created an instance of the noteservice class
+  late final NotesService _notesService;
+
+  // to get the user email at the front of currentUser! and email! is used to forcfefully fetch the current user and it email respectfully
   String get userEmail => AuthService.firebase().currentUser!.email!;
+  // the ! is used to focefully get the currentUser and email of the user
 
-  /// here i created an instance of the noteservice class
-  // late final NotesService _notesService;
-
+  /// the reason why ensureDbIsOpen is created is before any of the functons are called
+  /// the notes would actually open our db
 // open the db
-//   @override
-//   void initState() {
-//     _notesService = NotesService();
-//     _notesService.open();
-//     super.initState();
-//   }
+  @override
+  void initState() {
+    _notesService = NotesService();
+    // _notesService.open();
+    super.initState();
+  }
 
-// // close the db
-//   @override
-//   void dispose() {
-//     _notesService.close();
-//     super.dispose();
-//   }
+// close the db
+  @override
+  void dispose() {
+    _notesService.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Main UI'),
-          actions: [
-            PopupMenuButton<MenuAction>(
-              onSelected: (value) async {
-                // devtools.log(value.toString());
+      appBar: AppBar(
+        title: const Text('Your Notes'),
+        actions: [
+          PopupMenuButton<MenuAction>(
+            onSelected: (value) async {
+              // devtools.log(value.toString());
 
-                switch (value) {
-                  case MenuAction.logout:
+              switch (value) {
+                case MenuAction.logout:
 
-                    // the below code is to get the value of the options on the alert dialog
+                  // the below code is to get the value of the options on the alert dialog
 
-                    final shouldLogout = await showLogOutDialog(context);
+                  final shouldLogout = await showLogOutDialog(context);
 
-                    //the below code simply means that if the user shouldLogout then log the
-                    //person out and take him out of the home page
-                    if (shouldLogout) {
-                      await AuthService.firebase().logOut();
+                  //the below code simply means that if the user shouldLogout then log the
+                  //person out and take him out of the home page
+                  if (shouldLogout) {
+                    await AuthService.firebase().logOut();
 
-                      // await FirebaseAuth.instance.signOut(); //the signout code
+                    // await FirebaseAuth.instance.signOut(); //the signout code
 
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        loginRoute,
-                        (_) => false,
-                      );
-                    }
-                    // devtools.log(shouldLogout.toString());
-                    break;
-                }
-              },
-              itemBuilder: (context) {
-                return const [
-                  PopupMenuItem<MenuAction>(
-                    value: MenuAction
-                        .logout, // value is what the programmmer sees and
-                    child: Text('Log out'), // child is what the users will see
-                  ),
-                ];
-              },
-            )
-          ],
-        ),
-        body: const Text('Hello world'));
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      loginRoute,
+                      (_) => false,
+                    );
+                  }
+                  // devtools.log(shouldLogout.toString());
+                  break;
+              }
+            },
+            itemBuilder: (context) {
+              return const [
+                PopupMenuItem<MenuAction>(
+                  value: MenuAction
+                      .logout, // value is what the programmmer sees and
+                  child: Text('Log out'), // child is what the users will see
+                ),
+              ];
+            },
+          )
+        ],
+      ),
+      body: FutureBuilder(
+        future: _notesService.getOrCreateUser(email: userEmail),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return StreamBuilder(
+                stream: _notesService.allNotes,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return const Text('Waiting for all notes...');
+                    default:
+                      return CircularProgressIndicator();
+                  }
+                },
+              );
+
+            default:
+              return CircularProgressIndicator();
+          }
+        },
+      ),
+    );
   }
 }
