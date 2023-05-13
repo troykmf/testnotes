@@ -87,36 +87,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-/* this is a function to create a popUpMenu that shows an alert dialog when 
-pressed that returns a bool cause a dialog basically returns a true or false value */
-Future<bool> showLogOutDialog(BuildContext context) {
-  return showDialog<bool>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Log out'),
-        content: const Text('Are you sure you want to log out?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: const Text('Log out'),
-          )
-        ],
-      );
-    },
-    /*what this last line means is that if a user doesnt press any action or 
-    pressed something else that is not a true or false value declared, it should
-    either return the value selected or false that is it should dismiss the dialog*/
-  ).then((value) => value ?? false);
-}
+
 
 // class HomePage extends StatefulWidget {
 //   const HomePage({Key? key, required this.title}) : super(key: key);
