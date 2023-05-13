@@ -1,13 +1,11 @@
 /* So basically all the code below is just to show how to create  */
 
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:testnotes/services/auth/crud/crud_exceptions.dart';
-import 'dart:developer' show log;
 
 class NotesService {
   Database? _db;
@@ -17,11 +15,22 @@ class NotesService {
 
 // to make the NoteService class a Singleton
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    // this is to make sure that the NoteService sharedInstance is initialized
+    _noteStreamController = StreamController<List<DatabaseNotes>>.broadcast(
+      // onListen call back is going to get called back whenever a new listener
+      // subscribes to the noteStreamController stream
+      // It is to ensure that the noteStreamConitroller is populated with our data
+      // from List<DatabaseNotes> _notes
+      onListen: () {
+        _noteStreamController.sink.add(_notes);
+      },
+    );
+  }
   factory NotesService() => _shared;
 
-  final _noteStreamController =
-      StreamController<List<DatabaseNotes>>.broadcast();
+  late final StreamController<List<DatabaseNotes>> _noteStreamController;
+
   // to create a streamController, you just say StreamController<> and specify the type of data that the stream
   // contain and put .broadcast ...
   // e.g final noteStreamController = StreamController<List<DatabaseNotes>>.broadcast();

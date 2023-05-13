@@ -91,8 +91,29 @@ class _NotesViewState extends State<NotesView> {
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      // case ConnectionState.active:
-                      return const Text('Waiting for all notes...');
+                    case ConnectionState.active:
+                      if (snapshot.hasData) {
+                        final allNotes = snapshot.data as List<DatabaseNotes>;
+                        // print(allNotes);
+                        return ListView.builder(
+                          itemCount: allNotes.length,
+                          itemBuilder: (context, index) {
+                            final note = allNotes[index];
+                            return ListTile(
+                              title: Text(
+                                note.text,
+                                maxLines: 1,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          },
+                        );
+                        // return const Text('Got all notes...');
+                      } else {
+                        return const CircularProgressIndicator();
+                      }
+                    // return const Text('Waiting for all notes...');
                     default:
                       return const CircularProgressIndicator();
                   }
@@ -106,11 +127,14 @@ class _NotesViewState extends State<NotesView> {
       ),
     );
   }
+// p.s don't play with closing of the database inside any of the widgets
+// cause its going to interfere with the internals and how the noteService is
+// supposed to work
 
   // close the db
-  @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _notesService.close();
+  //   super.dispose();
+  // }
 }
