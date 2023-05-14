@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:testnotes/services/auth/auth_service.dart';
 import 'package:testnotes/services/auth/crud/notes_service.dart';
+import 'package:testnotes/utilities/generics/get_arguments.dart';
 
-class NewNotesView extends StatefulWidget {
-  const NewNotesView({Key? key}) : super(key: key);
+class CreateUpdateNewNote extends StatefulWidget {
+  const CreateUpdateNewNote({Key? key}) : super(key: key);
 
   @override
-  State<NewNotesView> createState() => _NewNotesViewState();
+  State<CreateUpdateNewNote> createState() => _CreateUpdateNewNoteState();
 }
 
-class _NewNotesViewState extends State<NewNotesView> {
+class _CreateUpdateNewNoteState extends State<CreateUpdateNewNote> {
   DatabaseNotes? _note;
   late final NotesService _noteService;
   late final TextEditingController _textController;
@@ -40,16 +41,26 @@ class _NewNotesViewState extends State<NewNotesView> {
 
 // the future funtion is the make sure if a note is existing, and if there isnt,
 // it will create a new note
-  Future<DatabaseNotes> createNewNote() async {
+  Future<DatabaseNotes> createOrGetExistingNote(BuildContext context) async {
+    // function to grab existing note if its there,
+    final widgetNote = context.getArgument<DatabaseNotes>();
+
+    if (widgetNote != null) {
+      _note = widgetNote;
+      _textController.text = widgetNote.text;
+      return widgetNote;
+    }
+
     final existingNote = _note;
     if (existingNote != null) {
       return existingNote;
     }
     final currentUser = AuthService.firebase().currentUser!;
-    print(currentUser);
     final email = currentUser.email!;
     final owner = await _noteService.getUser(email: email);
-    return await _noteService.createNote(owner: owner);
+    final newNote = await _noteService.createNote(owner: owner);
+    _note = newNote;
+    return newNote;
   }
 
 // basically the function below is for if there isn't a text in the textfield or
@@ -91,11 +102,11 @@ class _NewNotesViewState extends State<NewNotesView> {
         title: const Text('New Note'),
       ),
       body: FutureBuilder(
-        future: createNewNote(),
+        future: createOrGetExistingNote(context),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              _note = snapshot.data as DatabaseNotes;
+              // _note = snapshot.data as DatabaseNotes;
               _setupTextControllerListener();
               return TextField(
                 controller: _textController,

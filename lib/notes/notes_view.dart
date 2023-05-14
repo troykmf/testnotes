@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:testnotes/constants/routes.dart';
 import 'package:testnotes/enums/menu_action.dart';
-import 'package:testnotes/main.dart';
 import 'package:testnotes/notes/note_list_view.dart';
 import 'package:testnotes/services/auth/auth_service.dart';
 import 'package:testnotes/services/auth/crud/notes_service.dart';
@@ -24,6 +23,7 @@ class _NotesViewState extends State<NotesView> {
 
   /// the reason why ensureDbIsOpen is created is before any of the functons are called
   /// the notes would actually open our db
+
 // open the db
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _NotesViewState extends State<NotesView> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(newNoteRoute);
+              Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
             },
             icon: const Icon(Icons.add),
           ),
@@ -102,6 +102,12 @@ class _NotesViewState extends State<NotesView> {
                           notes: allNotes,
                           onDeleteNote: (note) async {
                             await _notesService.deleteNote(id: note.id);
+                          },
+                          onTap: (notes) {
+                            Navigator.of(context).pushNamed(
+                              createOrUpdateNoteRoute,
+                              arguments: notes,
+                            );
                           },
                         );
                       } else {
