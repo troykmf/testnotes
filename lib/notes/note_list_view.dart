@@ -22,6 +22,8 @@ class NotesListView extends StatelessWidget {
       itemBuilder: (context, index) {
         final note = notes[index];
         return ListTile(
+          /// the ontap function allows me to be able to tap on the existing notes
+          /// to update it as usual
           onTap: () {
             onTap(note);
           },

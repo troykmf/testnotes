@@ -42,10 +42,11 @@ class _CreateUpdateNewNoteState extends State<CreateUpdateNewNote> {
 // the future funtion is the make sure if a note is existing, and if there isnt,
 // it will create a new note
   Future<DatabaseNotes> createOrGetExistingNote(BuildContext context) async {
-    // function to grab existing note if its there,
+    // function to grab existing note if its there, from line 46 to 57
     final widgetNote = context.getArgument<DatabaseNotes>();
 
     if (widgetNote != null) {
+      // meaning we're updating an existing note
       _note = widgetNote;
       _textController.text = widgetNote.text;
       return widgetNote;

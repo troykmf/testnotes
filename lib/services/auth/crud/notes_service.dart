@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:testnotes/extensions/list/filter.dart';
 import 'package:testnotes/services/auth/crud/crud_exceptions.dart';
 
 class NotesService {
@@ -12,6 +13,9 @@ class NotesService {
 
   List<DatabaseNotes> _notes =
       []; // this is where our notes are going to be kept. Let's just say its our cache
+
+  /// alwasy make sure the DatabaseUser is set before grabbing the list of notes
+  DatabaseUser? _user;
 
 // to make the NoteService class a Singleton
   static final NotesService _shared = NotesService._sharedInstance();
@@ -36,15 +40,33 @@ class NotesService {
   // e.g final noteStreamController = StreamController<List<DatabaseNotes>>.broadcast();
 
   // getter for getting all notes
-  Stream<List<DatabaseNotes>> get allNotes => _noteStreamController.stream;
+  Stream<List<DatabaseNotes>> get allNotes =>
+      _noteStreamController.stream.filter((note) {
+        final currentUser = _user;
+        if (currentUser != null) {
+          return note.userId == currentUser.id;
+        } else {
+          throw UserShouldBeSetBeforeReadingAllNotes();
+        }
+        // return true;
+      });
 
 // future functoin to make sure a user is associated to when the note service is used
-  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+  Future<DatabaseUser> getOrCreateUser({
+    required String email,
+    bool setAsCurrentUser = true,
+  }) async {
     try {
       final user = await getUser(email: email);
+      if (setAsCurrentUser) {
+        _user = user;
+      }
       return user;
     } on CouldNotFindUser {
       final createdUser = await createUser(email: email);
+      if (setAsCurrentUser) {
+        _user = createdUser;
+      }
       return createdUser;
     } catch (e) {
       rethrow;
@@ -78,10 +100,15 @@ class NotesService {
     // the below code is to make sure the note exist
     await getNote(id: note.id);
     // the below to update the db
-    final updateCount = await db.update(noteTable, {
-      textColumn: text,
-      isSyncedWithCloudColumn: 0,
-    });
+    final updateCount = await db.update(
+      noteTable,
+      {
+        textColumn: text,
+        isSyncedWithCloudColumn: 0,
+      },
+      where: 'id =?',
+      whereArgs: [note.id],
+    );
 
     if (updateCount == 0) {
       throw CouldNotUpdateNote();
