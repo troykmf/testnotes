@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:testnotes/services/auth/auth_service.dart';
-import 'package:testnotes/services/auth/crud/notes_service.dart';
 import 'package:testnotes/utilities/generics/get_arguments.dart';
+import 'package:testnotes/services/auth/cloud/firebase_cloud_storage.dart';
+import 'package:testnotes/services/auth/cloud/cloud_note.dart';
 
 class CreateUpdateNewNote extends StatefulWidget {
   const CreateUpdateNewNote({Key? key}) : super(key: key);
@@ -11,13 +12,16 @@ class CreateUpdateNewNote extends StatefulWidget {
 }
 
 class _CreateUpdateNewNoteState extends State<CreateUpdateNewNote> {
-  DatabaseNotes? _note;
-  late final NotesService _noteService;
+  //Database? _note
+  CloudNote? _note;
+  // late final NoteService _noteService;
+  late final FirebaseCloudStorage _noteService;
   late final TextEditingController _textController;
 
   @override
   void initState() {
-    _noteService = NotesService();
+    // _noteService = NoteService();
+    _noteService = FirebaseCloudStorage();
     _textController = TextEditingController();
     super.initState();
   }
@@ -29,7 +33,7 @@ class _CreateUpdateNewNoteState extends State<CreateUpdateNewNote> {
     }
     final text = _textController.text;
     await _noteService.updateNote(
-      note: note,
+      documentId: note.documentId,
       text: text,
     );
   }
@@ -41,9 +45,11 @@ class _CreateUpdateNewNoteState extends State<CreateUpdateNewNote> {
 
 // the future funtion is the make sure if a note is existing, and if there isnt,
 // it will create a new note
-  Future<DatabaseNotes> createOrGetExistingNote(BuildContext context) async {
+  // Future<DatabaseNotes> createOrGetExistingNote(BuildContext context) async {
+  Future<CloudNote> createOrGetExistingNote(BuildContext context) async {
     // function to grab existing note if its there, from line 46 to 57
-    final widgetNote = context.getArgument<DatabaseNotes>();
+    // final widgetNote = context.getArgument<DatabaseNotes>();
+    final widgetNote = context.getArgument<CloudNote>();
 
     if (widgetNote != null) {
       // meaning we're updating an existing note
@@ -57,9 +63,10 @@ class _CreateUpdateNewNoteState extends State<CreateUpdateNewNote> {
       return existingNote;
     }
     final currentUser = AuthService.firebase().currentUser!;
-    final email = currentUser.email;
-    final owner = await _noteService.getUser(email: email);
-    final newNote = await _noteService.createNote(owner: owner);
+    // final email = currentUser.email;
+    // final owner = await _noteService.getUser(email: email);
+    final userId = currentUser.id;
+    final newNote = await _noteService.createNewNote(ownerUserId: userId);
     _note = newNote;
     return newNote;
   }
@@ -70,7 +77,8 @@ class _CreateUpdateNewNoteState extends State<CreateUpdateNewNote> {
   void _deleteNoteIfTextIsEmpty() {
     final note = _note;
     if (_textController.text.isEmpty && note != null) {
-      _noteService.deleteNote(id: note.id);
+      // _noteService.deleteNote(id: note.id);
+      _noteService.deleteNote(documentId: note.documentId);
     }
   }
 
@@ -81,8 +89,12 @@ class _CreateUpdateNewNoteState extends State<CreateUpdateNewNote> {
     final note = _note;
     final text = _textController.text;
     if (note != null && text.isNotEmpty) {
+      //await _noteService.updateNote(
+      //   note: note,
+      //   text: text,
+      // );
       await _noteService.updateNote(
-        note: note,
+        documentId: note.documentId,
         text: text,
       );
     }

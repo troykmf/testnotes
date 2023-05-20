@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:testnotes/services/auth/crud/notes_service.dart';
+import 'package:testnotes/services/auth/cloud/cloud_note.dart';
 import 'package:testnotes/utilities/dialogs/delete_dialog.dart';
 
-typedef NoteCallBack = void Function(DatabaseNotes notes);
+// typedef NoteCallBack = void Function(DatabaseNotes notes);
+typedef NoteCallBack = void Function(CloudNote notes);
 
 class NotesListView extends StatelessWidget {
-  final List<DatabaseNotes> notes;
+  // final List<DatabaseNotes> notes
+  final Iterable<CloudNote> notes;
   final NoteCallBack onDeleteNote;
   final NoteCallBack onTap;
   const NotesListView({
@@ -20,7 +22,8 @@ class NotesListView extends StatelessWidget {
     return ListView.builder(
       itemCount: notes.length,
       itemBuilder: (context, index) {
-        final note = notes[index];
+        // final note = notes[index];
+        final note = notes.elementAt(index);
         return ListTile(
           /// the ontap function allows me to be able to tap on the existing notes
           /// to update it as usual
