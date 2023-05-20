@@ -18,7 +18,7 @@ class _NotesViewState extends State<NotesView> {
   late final NotesService _notesService;
 
   // to get the user email at the front of currentUser! and email! is used to forcfefully fetch the current user and it email respectfully
-  String get userEmail => AuthService.firebase().currentUser!.email!;
+  String get userEmail => AuthService.firebase().currentUser!.email;
   // the ! is used to focefully get the currentUser and email of the user
 
   /// the reason why ensureDbIsOpen is created is before any of the functons are called
