@@ -24,7 +24,7 @@ class _NotesViewState extends State<NotesView> {
   // String get emailId => AuthService.firebase().currentUser!.email;
   // the ! is used to focefully get the currentUser and email of the user
 
-  String get userId => AuthService.firebase().currentUser!.email;
+  String get userId => AuthService.firebase().currentUser!.id;
 
   /// the reason why ensureDbIsOpen is created is before any of the functons are called
   /// the notes would actually open our db
@@ -105,7 +105,8 @@ class _NotesViewState extends State<NotesView> {
                     notes: allNotes,
                     onDeleteNote: (note) async {
                       await _notesService.deleteNote(
-                          documentId: note.documentId);
+                        documentId: note.documentId,
+                      );
                       // await _notesService.deleteNote(id: note.id);
                     },
                     onTap: (notes) {
