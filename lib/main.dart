@@ -39,55 +39,55 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+// class HomePage extends StatelessWidget {
+//   const HomePage({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: AuthService.firebase().initialize(),
-      builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.done:
-            final user = AuthService.firebase().currentUser;
-            if (user != null) {
-              if (user.isEmailVerified) {
-                return const NotesView();
-              } else {
-                return const VerifyEmailView();
-              }
-            } else {
-              return const LoginView();
-            }
+//   @override
+//   Widget build(BuildContext context) {
+//     return FutureBuilder(
+//       future: AuthService.firebase().initialize(),
+//       builder: (context, snapshot) {
+//         switch (snapshot.connectionState) {
+//           case ConnectionState.done:
+//             final user = AuthService.firebase().currentUser;
+//             if (user != null) {
+//               if (user.isEmailVerified) {
+//                 return const NotesView();
+//               } else {
+//                 return const VerifyEmailView();
+//               }
+//             } else {
+//               return const LoginView();
+//             }
 
-          //to verify the user of an email address,
-          // final user = FirebaseAuth.instance.currentUser;
-          // if (user?.emailVerified ?? false) {
-          //   print('You are verified.');
-          // } else {
-          //   return const VerifyEmailView();
-          /* NOTE: we are not pushing verifyemailview as a screen because
-                  it's just like pushing an entire screen into the main screen
-                  since the main screen already contains a scaffold and an appbar
-                  so instead, we would only be pushing a widget or rather we
-                  would be returning a widget like we did above */
-          //p.s the below route is an anonymous route
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(
-          //     builder: (context) => const VerifyEmailView(),
-          //   ),
-          // );
-          // print('You need to verify your email first');
-          // }
-          // return const Text('Done');
-          // return const LoginView();
-          default:
-            return const Center(child: CircularProgressIndicator());
-        }
-      },
-    );
-  }
-}
+//           //to verify the user of an email address,
+//           // final user = FirebaseAuth.instance.currentUser;
+//           // if (user?.emailVerified ?? false) {
+//           //   print('You are verified.');
+//           // } else {
+//           //   return const VerifyEmailView();
+//           /* NOTE: we are not pushing verifyemailview as a screen because
+//                   it's just like pushing an entire screen into the main screen
+//                   since the main screen already contains a scaffold and an appbar
+//                   so instead, we would only be pushing a widget or rather we
+//                   would be returning a widget like we did above */
+//           //p.s the below route is an anonymous route
+//           // Navigator.of(context).push(
+//           //   MaterialPageRoute(
+//           //     builder: (context) => const VerifyEmailView(),
+//           //   ),
+//           // );
+//           // print('You need to verify your email first');
+//           // }
+//           // return const Text('Done');
+//           // return const LoginView();
+//           default:
+//             return const Center(child: CircularProgressIndicator());
+//         }
+//       },
+//     );
+//   }
+// }
 
 // class HomePage extends StatefulWidget {
 //   const HomePage({Key? key, required this.title}) : super(key: key);
@@ -176,169 +176,169 @@ class HomePage extends StatelessWidget {
 ///
 /// USING BLOC AS AN EXAMPLE
 ///
-// class HomePage extends StatefulWidget {
-//   const HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
-//   @override
-//   State<HomePage> createState() => _HomePageState();
-// }
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
 
-// class _HomePageState extends State<HomePage> {
-//   late final TextEditingController _controller;
+class _HomePageState extends State<HomePage> {
+  late final TextEditingController _controller;
 
-//   @override
-//   void initState() {
-//     _controller = TextEditingController();
-//     super.initState();
-//   }
+  @override
+  void initState() {
+    _controller = TextEditingController();
+    super.initState();
+  }
 
-//   @override
-//   void dispose() {
-//     _controller.dispose();
-//     super.dispose();
-//   }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     // bLoc provoder is a flutter_bLoc package that gets a CREATE function
-//     // which accepts a context and returns a bLoc(bLoc containing both the event and state, it can be completed with vs code help)
-//     // it also takes in a child which returns a widget
-//     return BlocProvider(
-//       create: (context) => CounterBloc(),
-//       child: Scaffold(
-//         appBar: AppBar(
-//           title: const Text('Testing bLoc'),
-//         ),
-//         // a bLoc consumer is the combination of a bLoc listener and bLoc builder
-//         //                      |             |
-//         //                     bLoc         state
-//         body: BlocConsumer<CounterBloc, CounterState>(
-//           listener: (context, state) {
-//             _controller.clear();
-//           },
-//           builder: (context, state) {
-//             final invalidValue =
-//                 (state is CounterStateInvalidNumber) ? state.invalidNumber : '';
-//             return Column(
-//               children: [
-//                 Text('Current value => ${state.value}'),
-//                 Visibility(
-//                   visible: state is CounterStateInvalidNumber,
-//                   child: Text('Invalid input: $invalidValue'),
-//                 ),
-//                 TextField(
-//                   controller: _controller,
-//                   decoration:
-//                       const InputDecoration(hintText: 'Enter a number here'),
-//                   keyboardType: TextInputType.number,
-//                 ),
-//                 Row(
-//                   children: [
-//                     TextButton(
-//                       onPressed: () {
-//                         // the context.read() is function that allows us to read from bLoc
-//                         context.read<CounterBloc>().add(
-//                               DecrementEvent(_controller.text),
-//                             );
-//                       },
-//                       child: const Text('-'),
-//                     ),
-//                     TextButton(
-//                       onPressed: () {
-//                         context.read<CounterBloc>().add(
-//                               IncrementEvent(_controller.text),
-//                             );
-//                       },
-//                       child: const Text('+'),
-//                     ),
-//                   ],
-//                 )
-//               ],
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    // bLoc provoder is a flutter_bLoc package that gets a CREATE function
+    // which accepts a context and returns a bLoc(bLoc containing both the event and state, it can be completed with vs code help)
+    // it also takes in a child which returns a widget
+    return BlocProvider(
+      create: (context) => CounterBloc(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Testing bLoc'),
+        ),
+        // a bLoc consumer is the combination of a bLoc listener and bLoc builder
+        //                      |             |
+        //                     bLoc         state
+        body: BlocConsumer<CounterBloc, CounterState>(
+          listener: (context, state) {
+            _controller.clear();
+          },
+          builder: (context, state) {
+            final invalidValue =
+                (state is CounterStateInvalidNumber) ? state.invalidNumber : '';
+            return Column(
+              children: [
+                Text('Current value => ${state.value}'),
+                Visibility(
+                  visible: state is CounterStateInvalidNumber,
+                  child: Text('Invalid input: $invalidValue'),
+                ),
+                TextField(
+                  controller: _controller,
+                  decoration:
+                      const InputDecoration(hintText: 'Enter a number here'),
+                  keyboardType: TextInputType.number,
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        // the context.read() is function that allows us to read from bLoc
+                        context.read<CounterBloc>().add(
+                              DecrementEvent(_controller.text),
+                            );
+                      },
+                      child: const Text('-'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.read<CounterBloc>().add(
+                              IncrementEvent(_controller.text),
+                            );
+                      },
+                      child: const Text('+'),
+                    ),
+                  ],
+                )
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
 
-// // a basic state of a bLoc
-// @immutable
-// abstract class CounterState {
-//   final int value;
-//   const CounterState(this.value);
-// }
+// a basic state of a bLoc
+@immutable
+abstract class CounterState {
+  final int value;
+  const CounterState(this.value);
+}
 
-// class CounterStateValid extends CounterState {
-//   const CounterStateValid(int value) : super(value);
-// }
+class CounterStateValid extends CounterState {
+  const CounterStateValid(int value) : super(value);
+}
 
-// class CounterStateInvalidNumber extends CounterState {
-//   final String invalidNumber;
+class CounterStateInvalidNumber extends CounterState {
+  final String invalidNumber;
 
-//   const CounterStateInvalidNumber({
-//     required this.invalidNumber,
-//     required int previousValue,
-//   }) : super(previousValue);
-// }
+  const CounterStateInvalidNumber({
+    required this.invalidNumber,
+    required int previousValue,
+  }) : super(previousValue);
+}
 
-// @immutable
-// abstract class CounterEvent {
-//   final String value;
-//   const CounterEvent(this.value);
-// }
+@immutable
+abstract class CounterEvent {
+  final String value;
+  const CounterEvent(this.value);
+}
 
-// class IncrementEvent extends CounterEvent {
-//   const IncrementEvent(String value) : super(value);
-// }
+class IncrementEvent extends CounterEvent {
+  const IncrementEvent(String value) : super(value);
+}
 
-// class DecrementEvent extends CounterEvent {
-//   const DecrementEvent(String value) : super(value);
-// }
+class DecrementEvent extends CounterEvent {
+  const DecrementEvent(String value) : super(value);
+}
 
-// // every bLoc needs an initial state and thats what you pass into the super()
-// class CounterBloc extends Bloc<CounterEvent, CounterState> {
-//   CounterBloc() : super(const CounterStateValid(0)) {
-//     on<IncrementEvent>(
-//       (event, emit) {
-//         //tryParse is a int function that would try to parse a String
-//         // value into an integer and if it cant, it would return null.
-//         final integer = int.tryParse(event.value);
-//         if (integer == null) {
-//           /// basically the function below is that since we're emitting,
-//           /// we are sending a state out the bLoc.
-//           /// Given the integer cou;dn't be parsed as an integer then emit
-//           /// CounterStateInvalidNumber
-//           emit(
-//             CounterStateInvalidNumber(
-//               invalidNumber: event.value,
-//               previousValue: state.value,
-//             ),
-//           );
-//         } else {
-//           // emit is a  function on its own that allows you to pass a state out of bLoc
-//           emit(
-//             CounterStateValid(state.value + integer),
-//           );
-//         }
-//       },
-//     );
-//     on<DecrementEvent>(
-//       (event, emit) {
-//         final integer = int.tryParse(event.value);
-//         if (integer == null) {
-//           emit(
-//             CounterStateInvalidNumber(
-//               invalidNumber: event.value,
-//               previousValue: state.value,
-//             ),
-//           );
-//         } else {
-//           emit(
-//             CounterStateValid(state.value - integer),
-//           );
-//         }
-//       },
-//     );
-//   }
-// }
+// every bLoc needs an initial state and thats what you pass into the super()
+class CounterBloc extends Bloc<CounterEvent, CounterState> {
+  CounterBloc() : super(const CounterStateValid(0)) {
+    on<IncrementEvent>(
+      (event, emit) {
+        //tryParse is a int function that would try to parse a String
+        // value into an integer and if it cant, it would return null.
+        final integer = int.tryParse(event.value);
+        if (integer == null) {
+          /// basically the function below is that since we're emitting,
+          /// we are sending a state out the bLoc.
+          /// Given the integer cou;dn't be parsed as an integer then emit
+          /// CounterStateInvalidNumber
+          emit(
+            CounterStateInvalidNumber(
+              invalidNumber: event.value,
+              previousValue: state.value,
+            ),
+          );
+        } else {
+          // emit is a  function on its own that allows you to pass a state out of bLoc
+          emit(
+            CounterStateValid(state.value + integer),
+          );
+        }
+      },
+    );
+    on<DecrementEvent>(
+      (event, emit) {
+        final integer = int.tryParse(event.value);
+        if (integer == null) {
+          emit(
+            CounterStateInvalidNumber(
+              invalidNumber: event.value,
+              previousValue: state.value,
+            ),
+          );
+        } else {
+          emit(
+            CounterStateValid(state.value - integer),
+          );
+        }
+      },
+    );
+  }
+}
