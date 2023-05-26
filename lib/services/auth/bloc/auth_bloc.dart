@@ -19,7 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         // rather the state of the user is lpggedOut. That is, if there is no user then
         // the user is loggedOut atm
         if (user == null) {
-          emit(const AuthStateLoggedOut());
+          emit(const AuthStateLoggedOut(null));
           // the second 'if' is that if the user is not emailVerified then the user needs verification
         } else if (!user.isEmailVerified) {
           emit(const AuthStateNeedsVerification());
@@ -38,7 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       /// if its able to connect then it should emit the state AuthStateLogin with the user
       /// else it should catch whatever exception that was thrown
       (event, emit) async {
-        emit(const AuthStateLoading());
+        // emit(const AuthStateLoading());
         final email = event.email;
         final password = event.password;
         try {
@@ -48,7 +48,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           );
           emit(AuthStateLoggedIn(user));
         } on Exception catch (e) {
-          emit(AuthStateLoginFailure(e));
+          emit(AuthStateLoggedOut(e));
         }
       },
     );
@@ -58,7 +58,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         try {
           emit(const AuthStateLoading()); // can never throw an exception
           await provider.logOut();
-          emit(const AuthStateLoggedOut());
+          emit(const AuthStateLoggedOut(null));
         } on Exception catch (e) {
           emit(AuthStateLogOutFailure(e));
         }
