@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart' show ReadContext;
 import 'package:testnotes/constants/routes.dart';
 import 'package:testnotes/enums/menu_action.dart';
 import 'package:testnotes/notes/note_list_view.dart';
 import 'package:testnotes/services/auth/auth_service.dart';
+import 'package:testnotes/services/auth/bloc/auth_bloc.dart';
+import 'package:testnotes/services/auth/bloc/auth_event.dart';
 import 'package:testnotes/services/auth/cloud/cloud_note.dart';
 import 'package:testnotes/services/auth/cloud/firebase_cloud_storage.dart';
 import 'package:testnotes/utilities/dialogs/logout_dialog.dart';
@@ -64,14 +67,13 @@ class _NotesViewState extends State<NotesView> {
                     //the below code simply means that if the user shouldLogout then log the
                     //person out and take him out of the home page
                     if (shouldLogout) {
-                      await AuthService.firebase().logOut();
-
+                      // await AuthService.firebase().logOut();
+                      // Navigator.of(context).pushNamedAndRemoveUntil(
+                      //   loginRoute,
+                      //   (_) => false,
+                      // );
                       // await FirebaseAuth.instance.signOut(); //the signout code
-
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        loginRoute,
-                        (_) => false,
-                      );
+                      context.read<AuthBloc>().add(const AuthEventLogout());
                     }
                     // devtools.log(shouldLogout.toString());
                     break;

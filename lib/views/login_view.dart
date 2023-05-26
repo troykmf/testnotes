@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:testnotes/constants/routes.dart';
 import 'package:testnotes/services/auth/auth_exceptions.dart';
-import 'package:testnotes/services/auth/auth_service.dart';
+import 'package:testnotes/services/auth/bloc/auth_bloc.dart';
+import 'package:testnotes/services/auth/bloc/auth_event.dart';
 import 'package:testnotes/utilities/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -61,27 +63,32 @@ class _LoginViewState extends State<LoginView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                await AuthService.firebase().logIn(
-                  email: email,
-                  password: password,
-                );
-                // await FirebaseAuth.instance.signInWithEmailAndPassword(
+                // await AuthService.firebase().logIn(
                 //   email: email,
                 //   password: password,
                 // );
-                final user = AuthService.firebase().currentUser;
-                if (user?.isEmailVerified ?? false) {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    notesRoute,
-                    (route) => false,
-                  );
-                } else {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    verifyEmailRoute,
-                    (route) => false,
-                  );
-                }
-
+                // // await FirebaseAuth.instance.signInWithEmailAndPassword(
+                // //   email: email,
+                // //   password: password,
+                // // );
+                // final user = AuthService.firebase().currentUser;
+                // if (user?.isEmailVerified ?? false) {
+                //   Navigator.of(context).pushNamedAndRemoveUntil(
+                //     notesRoute,
+                //     (route) => false,
+                //   );
+                // } else {
+                //   Navigator.of(context).pushNamedAndRemoveUntil(
+                //     verifyEmailRoute,
+                //     (route) => false,
+                //   );
+                // }
+                context.read<AuthBloc>().add(
+                      AuthEventLogin(
+                        email,
+                        password,
+                      ),
+                    );
                 // devtools.log(userCredential.toString());
               } on UserNotFoundAuthException {
                 await showErrorDialog(
