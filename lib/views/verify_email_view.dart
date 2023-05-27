@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:testnotes/constants/routes.dart';
-import 'package:testnotes/services/auth/auth_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:testnotes/services/auth/bloc/auth_bloc.dart';
+import 'package:testnotes/services/auth/bloc/auth_event.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({Key? key}) : super(key: key);
@@ -30,18 +31,24 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               // final user = AuthService.firebase().currentUser;
               //to send the email to the user, you have to call the user and
               //await user?.sendEmailVerification
-              await AuthService.firebase().sendEmailVerification();
+              // await AuthService.firebase().sendEmailVerification();
+              context.read<AuthBloc>().add(
+                    const AuthEventSendEmailVerification(),
+                  );
             },
             child: const Text('Send email verificatoin'),
           ),
           TextButton(
             onPressed: () async {
+              context.read<AuthBloc>().add(
+                    const AuthEventLogout(),
+                  );
               // await FirebaseAuth.instance.signOut();
-              await AuthService.firebase().logOut();
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                registerRoute,
-                (route) => false,
-              );
+              // await AuthService.firebase().logOut();
+              // Navigator.of(context).pushNamedAndRemoveUntil(
+              //   registerRoute,
+              //   (route) => false,
+              // );
             },
             child: const Text('Restart'),
           )

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:testnotes/constants/routes.dart';
 import 'package:testnotes/services/auth/auth_exceptions.dart';
 import 'package:testnotes/services/auth/bloc/auth_bloc.dart';
 import 'package:testnotes/services/auth/bloc/auth_event.dart';
 import 'package:testnotes/services/auth/bloc/auth_state.dart';
 import 'package:testnotes/utilities/dialogs/error_dialog.dart';
+import 'package:testnotes/utilities/dialogs/loading_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -18,6 +18,8 @@ class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
 
   late final TextEditingController _password;
+
+  CloseDialog? _closeDialogHandle;
 
   @override
   void initState() {
@@ -35,52 +37,53 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: Column(
-        children: [
-          TextField(
-            enableSuggestions: false,
-            autocorrect: false,
-            keyboardType: TextInputType.emailAddress,
-            keyboardAppearance: Brightness.dark,
-            controller: _email,
-            decoration:
-                const InputDecoration(hintText: 'Enter your email here'),
-          ),
-          TextField(
-            controller: _password,
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(
-              hintText: 'Enter your password here',
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is AuthStateLoggedOut) {
+          final closeDialog = _closeDialogHandle;
+          if (!state.isLoading && closeDialog != null) {
+            closeDialog();
+            _closeDialogHandle = null;
+          } else if (state.isLoading && closeDialog == null) {
+            _closeDialogHandle = showLoadingDialog(
+              context: context,
+              text: 'please wait...',
+            );
+          }
+          if (state.exception is UserNotFoundAuthException) {
+            await showErrorDialog(context, 'User not found');
+          } else if (state.exception is WrongPasswordAuthException) {
+            await showErrorDialog(context, 'Wrong credentials');
+          } else if (state.exception is GenericAuthException) {
+            await showErrorDialog(context, 'Authntication error');
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Login'),
+        ),
+        body: Column(
+          children: [
+            TextField(
+              enableSuggestions: false,
+              autocorrect: false,
+              keyboardType: TextInputType.emailAddress,
+              keyboardAppearance: Brightness.dark,
+              controller: _email,
+              decoration:
+                  const InputDecoration(hintText: 'Enter your email here'),
             ),
-          ),
-          BlocListener<AuthBloc, AuthState>(
-            listener: (context, state) async {
-              if (state is AuthStateLoggedOut) {
-                if (state.exception is UserNotFoundAuthException) {
-                  await showErrorDialog(
-                    context,
-                    'User not found',
-                  );
-                } else if (state.exception is WrongPasswordAuthException) {
-                  await showErrorDialog(
-                    context,
-                    'Wrong credentials',
-                  );
-                } else if (state.exception is GenericAuthException) {
-                  await showErrorDialog(
-                    context,
-                    'Authntication error',
-                  );
-                }
-              }
-            },
-            child: TextButton(
+            TextField(
+              controller: _password,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                hintText: 'Enter your password here',
+              ),
+            ),
+            TextButton(
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
@@ -90,65 +93,93 @@ class _LoginViewState extends State<LoginView> {
                         password,
                       ),
                     );
-                //   try {
-                //     // await AuthService.firebase().logIn(
-                //     //   email: email,
-                //     //   password: password,
-                //     // );
-                //     // // await FirebaseAuth.instance.signInWithEmailAndPassword(
-                //     // //   email: email,
-                //     // //   password: password,
-                //     // // );
-                //     // final user = AuthService.firebase().currentUser;
-                //     // if (user?.isEmailVerified ?? false) {
-                //     //   Navigator.of(context).pushNamedAndRemoveUntil(
-                //     //     notesRoute,
-                //     //     (route) => false,
-                //     //   );
-                //     // } else {
-                //     //   Navigator.of(context).pushNamedAndRemoveUntil(
-                //     //     verifyEmailRoute,
-                //     //     (route) => false,
-                //     //   );
-                //     // }
-                //     // devtools.log(userCredential.toString());
-                //   // } on UserNotFoundAuthException {
-                //   //   await showErrorDialog(
-                //   //     context,
-                //   //     'User not found',
-                //   //   );
-                //   // } on WrongPasswordAuthException {
-                //   //   await showErrorDialog(
-                //   //     context,
-                //   //     'Wrong credentials',
-                //   //   );
-                //   // } on GenericAuthException {
-                //   //   await showErrorDialog(
-                //   //     context,
-                //   //     'Authntication error',
-                //   //   );
-                //   // }
               },
               child: const Text('Login'),
             ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                registerRoute,
-                (route) => false,
-              );
-            },
-            child: const Text('Not registered yet? Register here!'),
-          ),
-        ],
+            TextButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(
+                      const AuthEventShouldRegister(),
+                    );
+                // Navigator.of(context).pushNamedAndRemoveUntil(
+                //   registerRoute,
+                //   (route) => false,
+                // );
+              },
+              child: const Text('Not registered yet? Register here!'),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+
+// BlocListener<AuthBloc, AuthState>(
+            //   listener: (context, state) async {
+            //     if (state is AuthStateLoggedOut) {
+            //       if (state.exception is UserNotFoundAuthException) {
+            //         await showErrorDialog(
+            //           context,
+            //           'User not found',
+            //         );
+            //       } else if (state.exception is WrongPasswordAuthException) {
+            //         await showErrorDialog(
+            //           context,
+            //           'Wrong credentials',
+            //         );
+            //       } else if (state.exception is GenericAuthException) {
+            //         await showErrorDialog(
+            //           context,
+            //           'Authntication error',
+            //         );
+            //       }
+            //     }
+            //   },
+            // ),
+  //   try {
+                  //     // await AuthService.firebase().logIn(
+                  //     //   email: email,
+                  //     //   password: password,
+                  //     // );
+                  //     // // await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  //     // //   email: email,
+                  //     // //   password: password,
+                  //     // // );
+                  //     // final user = AuthService.firebase().currentUser;
+                  //     // if (user?.isEmailVerified ?? false) {
+                  //     //   Navigator.of(context).pushNamedAndRemoveUntil(
+                  //     //     notesRoute,
+                  //     //     (route) => false,
+                  //     //   );
+                  //     // } else {
+                  //     //   Navigator.of(context).pushNamedAndRemoveUntil(
+                  //     //     verifyEmailRoute,
+                  //     //     (route) => false,
+                  //     //   );
+                  //     // }
+                  //     // devtools.log(userCredential.toString());
+                  //   // } on UserNotFoundAuthException {
+                  //   //   await showErrorDialog(
+                  //   //     context,
+                  //   //     'User not found',
+                  //   //   );
+                  //   // } on WrongPasswordAuthException {
+                  //   //   await showErrorDialog(
+                  //   //     context,
+                  //   //     'Wrong credentials',
+                  //   //   );
+                  //   // } on GenericAuthException {
+                  //   //   await showErrorDialog(
+                  //   //     context,
+                  //   //     'Authntication error',
+                  //   //   );
+                  //   // }
+
+
 // on FirebaseAuthException catch (e) {
-            //     if (e.code == 'user-not-found') {
-                  
+            //     if (e.code == 'user-not-found') {                  
             //       // await showErrorDialog(
             //       //   context,
             //       //   'User not found',
